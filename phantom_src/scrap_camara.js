@@ -1,25 +1,25 @@
-var page = require('webpage').create();
+var page = require('webpage').create(), deputados;
 
 page.onConsoleMessage = function(msg) {
     console.log(msg);
 };
 
-var nomes = {
-    url: "http://www2.camara.gov.br/deputados/pesquisa",
-
-    buscaNomesDeDeputados: function(){
-	var list = document.querySelectorAll('select#deputado option');
-	for (var i = 0; i < list.length; ++i) {
-            console.log(list[i].value + ": " + list[i].innerHTML.replace(/<.*?>/g, ''));
-	}
-    }
-}
-
-page.open(encodeURI(nomes.url), function (status) {
+page.open(encodeURI("http://www2.camara.gov.br/deputados/pesquisa"), function (status) {
     if (status !== "success") {
         console.log("Unable to access network");
     } else {
-        page.evaluate(nomes.buscaNomesDeDeputados);
+        deputados = page.evaluate(function(){
+	    var list = document.querySelectorAll('select#deputado option');
+	    var dep = new Array(list.length);
+	    for(var i=0; i<list.length; i++){
+		dep[i] = list[i].value;
+	    }
+	    return dep;
+	});
+	for(var i = 0; i < deputados.length; ++i) {
+	    console.log(deputados[i]);
+	}
     }
     phantom.exit();
 });
+
